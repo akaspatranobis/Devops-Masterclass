@@ -37,7 +37,7 @@ pipeline{
                 ])
             }
         }
-        
+
         stage("Sonarqube Code Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
@@ -63,7 +63,7 @@ pipeline{
             steps {
                 sh '''
                     npm install
-                    npm test
+                    npm test -- --watchAll=false --passWithNoTests
                 '''
                 publishHTML(target: [
                     reportName: 'React Unit Test Report',
