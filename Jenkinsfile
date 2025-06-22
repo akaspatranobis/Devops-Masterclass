@@ -21,20 +21,10 @@ pipeline{
         stage('Secrets Scan using GitLeaks') {
             steps {
                 sh '''
-                    mkdir -p gitleaks-reports
-                    docker run --rm -v $(pwd):/code zricethezav/gitleaks:latest detect \
-                        --source=/code \
-                        --report-format=html \
-                        --report-path=/code/gitleaks-reports/gitleaks-report.html || true
+                echo "🔍 Running GitLeaks scan..."
+                docker run --rm -v $(pwd):/code zricethezav/gitleaks:latest detect \
+                    --source=/code || true
                 '''
-                publishHTML(target: [
-                    reportName: 'GitLeaks Secrets Scan',
-                    reportDir: 'gitleaks-reports',
-                    reportFiles: 'gitleaks-report.html',
-                    keepAll: true,
-                    alwaysLinkToLastBuild: true,
-                    allowMissing: true
-                ])
             }
         }
 
