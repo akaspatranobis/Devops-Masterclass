@@ -1,7 +1,6 @@
 pipeline{
     agent any
     tools{
-        jdk 'jdk17'
         nodejs 'node16'
     }
     environment {
@@ -13,12 +12,12 @@ pipeline{
                 cleanWs()
             }
         }
-        stage('Checkout from Git'){
+        stage('Checkout from GitHub'){
             steps{
                 git branch: 'main', url: 'https://github.com/akaspatranobis/hotstar-clone-app-ci-cd-k8.git'
             }
         }
-        stage("Sonarqube Analysis "){
+        stage("Sonarqube Code Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
                     sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Hotstar \
@@ -26,14 +25,14 @@ pipeline{
                 }
             }
         }
-        stage("quality gate"){
+        stage("Quality Gates Check"){
            steps {
                 script {
                     waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token'
                 }
             }
         }
-        stage('Install Dependencies') {
+        stage('Install Build Dependencies') {
             steps {
                 sh "npm install"
             }
@@ -41,11 +40,22 @@ pipeline{
         
         stage('TRIVY SAST SCAN') {
             steps {
-                sh "trivy fs . > trivyfs.txt"
+                sh '''
+                    mkdir -p trivy-reports
+                    trivy fs . --format template --template "@/contrib/html.tpl" -o trivy-reports/trivy-sast.html
+                '''
+                publishHTML(target: [
+                    reportName: 'Trivy SAST Report',
+                    reportDir: 'trivy-reports',
+                    reportFiles: 'trivy-sast.html',
+                    keepAll: true,
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true
+                ])
             }
         }
 
-        stage('OWASP DAST SCAN') {
+        stage('OWASP SCA SCAN') {
             steps {
                 dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', nvdCredentialsId: 'NVDkey', odcInstallation: 'DP-Check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
@@ -63,13 +73,24 @@ pipeline{
                 }
             }
         }
-        stage("TRIVY"){
+        stage("Vulnerability SCAN"){
             steps{
-                sh "trivy image apatranobis59/hotstar:latest > trivyimage.txt" 
+                sh '''
+                mkdir -p trivy-reports
+                trivy image apatranobis59/hotstar:latest --format template --template "@/contrib/html.tpl" -o trivy-reports/trivy-image.html
+                '''
+                publishHTML(target: [
+                    reportName: 'Trivy Image Vulnerability Report',
+                    reportDir: 'trivy-reports',
+                    reportFiles: 'trivy-image.html',
+                    keepAll: true,
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true
+                ])
             }
         }
 		
-		stage('Deploy to kubernets'){
+		stage('Deploy to Kubernetes (AWS EKS)'){
             steps{
                 script{
                     dir('K8S') {

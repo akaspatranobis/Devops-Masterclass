@@ -48,3 +48,6 @@ To set up a fully functional CI/CD pipeline using Jenkins, ensure the following 
 
 - **Prometheus**  
   Export Jenkins metrics for monitoring in Prometheus
+
+- **HTML Publisher**  
+  Export HTML atrifacts into Jenkins  
