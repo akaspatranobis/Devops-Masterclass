@@ -26,6 +26,6 @@ spec:
             cpu: "250m"
           limits:
             memory: "300Mi"
-            cpu: "500m" 
+            cpu: "200m" 
         ports:
         - containerPort: 3000  # Port your application listens on
