@@ -41,8 +41,10 @@ pipeline{
         stage('TRIVY SAST SCAN') {
             steps {
                 sh '''
-                    mkdir -p trivy-reports
-                    trivy fs . --format template --template "@/contrib/html.tpl" -o trivy-reports/trivy-sast.html
+                mkdir -p trivy-reports
+                docker run --rm -v $(pwd):/project aquasec/trivy fs /project \
+                    --format template --template "@contrib/html.tpl" \
+                    -o /project/trivy-reports/trivy-sast.html
                 '''
                 publishHTML(target: [
                     reportName: 'Trivy SAST Report',
@@ -77,7 +79,9 @@ pipeline{
             steps{
                 sh '''
                 mkdir -p trivy-reports
-                trivy image apatranobis59/hotstar:latest --format template --template "@/contrib/html.tpl" -o trivy-reports/trivy-image.html
+                docker run --rm -v $(pwd):/project aquasec/trivy image apatranobis59/hotstar:latest \
+                    --format template --template "@contrib/html.tpl" \
+                    -o /project/trivy-reports/trivy-image.html
                 '''
                 publishHTML(target: [
                     reportName: 'Trivy Image Vulnerability Report',
