@@ -7,11 +7,6 @@ spec:
   selector:
     matchLabels:
       app: hotstar
-  strategy:
-   type: RollingUpdate
-   rollingUpdate:
-     maxUnavailable: 2 
-     maxSurge: 1      
   template:
     metadata:
       labels:
@@ -20,12 +15,5 @@ spec:
       containers:
       - name: hotstar
         image: apatranobis59/hotstar:latest
-        resources:
-          requests:
-            memory: "200Mi"
-            cpu: "200m"
-          limits:
-            memory: "300Mi"
-            cpu: "200m" 
         ports:
         - containerPort: 3000  # Port your application listens on
