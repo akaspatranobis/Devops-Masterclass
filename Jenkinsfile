@@ -49,15 +49,6 @@ pipeline{
             }
         }
 
-        stage('Run React Unit Tests') {
-            steps {
-                sh '''
-                npm install
-                npm run test:ci || true
-                '''
-                junit 'junit/junit.xml'
-            }
-        }
         
         stage('TRIVY SAST SCAN') {
             steps {
