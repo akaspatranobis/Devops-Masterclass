@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git Clone') {
+            steps {
+                git branch: 'main', url: 'https://github.com/akaspatranobis/Devops-Masterclass.git'
+            }
+        }
+        
+        stage('Terraform Version Check') {
+            steps {
+                sh 'terraform --version'
+            }
+        }
+        
+        stage('Terraform Initialize') {
+            steps {
+                dir('EKS_TERRAFORM') {
+                    sh 'terraform init'
+                }
+            }
+        }
+        
+        stage('Terraform Validate') {
+            steps {
+                dir('EKS_TERRAFORM') {
+                    sh 'terraform validate'
+                }
+            }
+        }
+        
+        stage('Terraform Plan') {
+            steps {
+                dir('EKS_TERRAFORM') {
+                    sh 'terraform plan'
+                }
+            }
+        }
+        
+        stage('Terraform Apply/Destroy') {
+            steps {
+                dir('EKS_TERRAFORM') {
+                    sh 'terraform ${Action} --auto-approve'
+                }
+            }
+        }
+    }
+}
