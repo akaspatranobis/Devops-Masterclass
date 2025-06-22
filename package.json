@@ -15,9 +15,18 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --watchAll=false --ci --reporters=default --reporters=jest-html-reporter",
     "eject": "react-scripts eject"
   },
+  "jest": {
+  "reporters": [
+    "default",
+    ["jest-html-reporter", {
+      "pageTitle": "Hotstar Clone Test Report",
+      "outputPath": "test-report.html"
+    }]
+  ]
+},
   "eslintConfig": {
     "extends": [
       "react-app",
