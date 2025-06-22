@@ -17,6 +17,27 @@ pipeline{
                 git branch: 'main', url: 'https://github.com/akaspatranobis/hotstar-clone-app-ci-cd-k8.git'
             }
         }
+
+        stage('Secrets Scan using GitLeaks') {
+            steps {
+                sh '''
+                    mkdir -p gitleaks-reports
+                    docker run --rm -v $(pwd):/code zricethezav/gitleaks:latest detect \
+                        --source=/code \
+                        --report-format=html \
+                        --report-path=/code/gitleaks-reports/gitleaks-report.html || true
+                '''
+                publishHTML(target: [
+                    reportName: 'GitLeaks Secrets Scan',
+                    reportDir: 'gitleaks-reports',
+                    reportFiles: 'gitleaks-report.html',
+                    keepAll: true,
+                    alwaysLinkToLastBuild: true,
+                    allowMissing: true
+                ])
+            }
+        }
+        
         stage("Sonarqube Code Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
@@ -35,6 +56,23 @@ pipeline{
         stage('Install Build Dependencies') {
             steps {
                 sh "npm install"
+            }
+        }
+
+        stage('Run React Unit Tests') {
+            steps {
+                sh '''
+                    npm install
+                    npm test
+                '''
+                publishHTML(target: [
+                    reportName: 'React Unit Test Report',
+                    reportDir: '.',
+                    reportFiles: 'test-report.html',
+                    keepAll: true,
+                    alwaysLinkToLastBuild: true,
+                    allowMissing: false
+                ])
             }
         }
         

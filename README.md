@@ -19,4 +19,6 @@ Whether you're from a non-IT background, starting your DevOps journey, or alread
 - IT professionals looking to level up their career to move into DevOps roles  
 - Anyone eager to upskill with cloud-native, automation-driven technologies  
 
-![Masterclass Poster](./imgs/devops-masterclass.png)
+
+
+![Masterclass Poster](./imgs/devops-masterclass.png){ width=600px }
