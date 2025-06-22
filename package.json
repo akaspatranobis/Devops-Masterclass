@@ -15,7 +15,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --watchAll=false --ci --reporters=default --reporters=jest-html-reporter",
+    "test:ci": "react-scripts test --watchAll=false --ci --reporters=default --reporters=jest-junit",
     "eject": "react-scripts eject"
   },
   "jest": {
@@ -26,6 +26,11 @@
       "outputPath": "test-report.html"
     }]
   ]
+},
+"jest-junit": {
+  "outputDirectory": "junit",
+  "outputName": "junit.xml",
+  "suiteName": "Hotstar Clone Unit Tests"
 },
   "eslintConfig": {
     "extends": [

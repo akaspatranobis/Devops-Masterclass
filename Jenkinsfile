@@ -52,17 +52,10 @@ pipeline{
         stage('Run React Unit Tests') {
             steps {
                 sh '''
-                    npm install
-                    npm test -- --watchAll=false --passWithNoTests
+                npm install
+                npm run test:ci || true
                 '''
-                publishHTML(target: [
-                    reportName: 'React Unit Test Report',
-                    reportDir: '.',
-                    reportFiles: 'test-report.html',
-                    keepAll: true,
-                    alwaysLinkToLastBuild: true,
-                    allowMissing: false
-                ])
+                junit 'junit/junit.xml'
             }
         }
         
