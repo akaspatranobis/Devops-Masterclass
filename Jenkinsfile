@@ -14,7 +14,7 @@ pipeline{
         }
         stage('Checkout from GitHub'){
             steps{
-                git branch: 'main', url: 'https://github.com/akaspatranobis/Devops-Masterclass.git'
+                git branch: 'main', url: 'https://github.com/akaspatranobis/hotstar-clone-app-ci-cd-k8.git'
             }
         }
 
