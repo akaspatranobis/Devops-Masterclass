@@ -21,4 +21,4 @@ Whether you're from a non-IT background, starting your DevOps journey, or alread
 
 
 
-![Masterclass Poster](./imgs/devops-masterclass.png)
+![Masterclass Poster](./imgs/devops-masterclass.svg)
