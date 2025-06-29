@@ -7,14 +7,14 @@ pipeline{
         SCANNER_HOME=tool 'sonar-scanner'
     }
     stages {
-        stage('clean workspace'){
+        stage('clean workspace'){                 
             steps{
                 cleanWs()
             }
         }
         stage('Checkout from GitHub'){
             steps{
-                git branch: 'main', url: 'https://github.com/akaspatranobis/hotstar-clone-app-ci-cd-k8.git'
+                git branch: 'main', url: 'https://github.com/akaspatranobis/Devops-Masterclass.git'
             }
         }
 
