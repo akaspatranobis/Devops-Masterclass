@@ -2,11 +2,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: hotstar-deployment
+  namespace: app
 spec:
   replicas: 3  # Number of desired replicas
   selector:
     matchLabels:
       app: hotstar
+  strategy:
+   type: RollingUpdate
+   rollingUpdate:
+     maxUnavailable: 2 
+     maxSurge: 1     
   template:
     metadata:
       labels:
@@ -15,5 +21,12 @@ spec:
       containers:
       - name: hotstar
         image: apatranobis59/hotstar:latest
+        resources:
+          requests:
+            memory: "350Mi"
+            cpu: "50m"
+          limits:
+            memory: "400Mi"
+            cpu: "100m" 
         ports:
         - containerPort: 3000  # Port your application listens on
