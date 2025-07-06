@@ -147,35 +147,19 @@ pipeline{
 
     post {
         always {
-            script {
-                echo "📤 Sending Kubernetes deployment status email..."
-
-                def kubeOutput = ""
-
-                dir('K8S') {
-                        withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
-                            kubeOutput = sh(
-                                script: "kubectl get all -n app",
-                                returnStdout: true
-                            ).trim()
-                        }
-                }    
-
+ 
                 emailext (
                     to: 'akaspatranobis@gmail.com',
-                    subject: "Jenkins Pipeline: Kubernetes Deployment Status",
+                    subject: "Jenkins Build Result: ${currentBuild.currentResult}",
                     body: """
-                    <h3>✅ DevSecOps CI/CD Pipeline Execution Completed</h3>
-                    <p>Here is the list of Kubernetes resources currently running in <b>app</b> namespace:</p>
-                    <pre>${kubeOutput}</pre>
-                    <br/>
-                    <p>🔁 Build Status: ${currentBuild.currentResult}</p>
-                    <p>👨‍💻 Jenkins Job: ${env.JOB_NAME} #${env.BUILD_NUMBER}</p>
-                    <p>🔗 View it: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                    Jenkins Job: ${env.JOB_NAME}
+                    Build Number: ${env.BUILD_NUMBER}
+                    Status: ${currentBuild.currentResult}
+                    Build URL: ${env.BUILD_URL}
                     """,
-                    mimeType: 'text/html'
+                    mimeType: 'text/plain'
                 )
-            }
+            
         }
     }
 
