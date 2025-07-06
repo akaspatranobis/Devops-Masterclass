@@ -49,3 +49,6 @@ To set up a fully functional CI/CD pipeline using Jenkins, ensure the following 
 
 - **HTML Publisher**  
   Export HTML atrifacts into Jenkins  
+
+- **Email Extension Template**  
+  Send Email Extension Template into Jenkins  

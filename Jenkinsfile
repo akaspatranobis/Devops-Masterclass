@@ -162,7 +162,7 @@ pipeline{
                 }    
 
                 emailext (
-                    to: 'info.ec2tech@gmail.com, akaspatranobis@gmail.com',
+                    to: 'akaspatranobis@gmail.com',
                     subject: "Jenkins Pipeline: Kubernetes Deployment Status",
                     body: """
                     <h3>✅ DevSecOps CI/CD Pipeline Execution Completed</h3>
