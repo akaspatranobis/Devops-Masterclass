@@ -7,8 +7,6 @@ To set up a fully functional CI/CD pipeline using Jenkins, ensure the following 
 - **Pipeline Stage View**  
   Visualize stages of your Jenkins Pipeline
 
-- **Eclipse Temurin Installer**  
-  Manage and install Temurin JDK distributions
 
 - **Git**  
   Enables Jenkins to pull code from Git repositories

@@ -31,8 +31,8 @@ pipeline{
         stage("Sonarqube Code Analysis "){
             steps{
                 withSonarQubeEnv('sonar-server') {
-                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=Hotstar \
-                    -Dsonar.projectKey=Hotstar'''
+                    sh ''' $SCANNER_HOME/bin/sonar-scanner -Dsonar.projectName=UI-App \
+                    -Dsonar.projectKey=UI-App'''
                 }
             }
         }
