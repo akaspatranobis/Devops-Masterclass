@@ -111,9 +111,31 @@ pipeline{
                 script{
                     dir('K8S') {
                         withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
-                                sh 'kubectl create ns app'
+                                echo "🔧 Ensuring namespace 'app' exists..."
+                                sh 'kubectl get ns app || kubectl create ns app'
+
+                                echo "Applying Kubernetes Deployment..."
                                 sh 'kubectl apply -f deployment.yml'
-                                sh 'kubectl apply -f service.yml'
+
+                                echo "Checking if service uiapp-service already exists..."
+                                def serviceExists = sh(
+                                    script: "kubectl get svc uiapp-service -n app > /dev/null 2>&1",
+                                    returnStatus: true
+                                ) == 0
+
+                                if (!serviceExists) {
+                                    echo "✅ Service does not exist. Creating service from service.yml..."
+                                    sh 'kubectl apply -n app -f service.yml'
+                                } else {
+                                    echo "⚠️ Service uiapp-service already exists. Skipping service apply."
+                                }
+
+                                echo "Waiting for pods to stabilize..."
+                                sh 'sleep 30'
+
+                                echo "Getting deployed resources..."
+                                sh 'kubectl get all -n app'
+                                
                         }
                     }
                 }
@@ -122,4 +144,33 @@ pipeline{
         
         
     }
+
+    post {
+        always {
+            script {
+                echo "📤 Sending Kubernetes deployment status email..."
+
+                def kubeOutput = sh(
+                    script: "kubectl get all -n app",
+                    returnStdout: true
+                ).trim()
+
+                emailext (
+                    to: 'info.ec2tech@gmail.com, akaspatranobis@gmail.com',
+                    subject: "Jenkins Pipeline: Kubernetes Deployment Status",
+                    body: """
+                    <h3>✅ DevSecOps CI/CD Pipeline Execution Completed</h3>
+                    <p>Here is the list of Kubernetes resources currently running in <b>app</b> namespace:</p>
+                    <pre>${kubeOutput}</pre>
+                    <br/>
+                    <p>🔁 Build Status: ${currentBuild.currentResult}</p>
+                    <p>👨‍💻 Jenkins Job: ${env.JOB_NAME} #${env.BUILD_NUMBER}</p>
+                    <p>🔗 View it: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+                    """,
+                    mimeType: 'text/html'
+                )
+            }
+        }
+    }
+
 }
