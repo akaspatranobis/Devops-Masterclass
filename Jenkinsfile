@@ -80,9 +80,9 @@ pipeline{
             steps{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
-                       sh "docker build -t hotstar ."
-                       sh "docker tag hotstar apatranobis59/hotstar:latest "
-                       sh "docker push apatranobis59/hotstar:latest"
+                       sh "docker build -t uiapp ."
+                       sh "docker tag uiapp apatranobis59/uipp:latest "
+                       sh "docker push apatranobis59/uiapp:latest"
                     }
                 }
             }
@@ -91,7 +91,7 @@ pipeline{
             steps{
                 sh '''
                 mkdir -p trivy-reports
-                docker run --rm -v $(pwd):/project aquasec/trivy image apatranobis59/hotstar:latest \
+                docker run --rm -v $(pwd):/project aquasec/trivy image apatranobis59/uiapp:latest \
                     --format template --template "@contrib/html.tpl" \
                     -o /project/trivy-reports/trivy-image.html
                 '''

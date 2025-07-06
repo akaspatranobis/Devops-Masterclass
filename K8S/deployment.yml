@@ -1,13 +1,13 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: hotstar-deployment
+  name: uiapp-deployment
   namespace: app
 spec:
   replicas: 3  # Number of desired replicas
   selector:
     matchLabels:
-      app: hotstar
+      app: uiapp
   strategy:
    type: RollingUpdate
    rollingUpdate:
@@ -16,11 +16,11 @@ spec:
   template:
     metadata:
       labels:
-        app: hotstar
+        app: uiapp
     spec:
       containers:
-      - name: hotstar
-        image: apatranobis59/hotstar:latest
+      - name: uiapp
+        image: apatranobis59/uiapp:latest
         resources:
           requests:
             memory: "350Mi"
