@@ -150,10 +150,16 @@ pipeline{
             script {
                 echo "📤 Sending Kubernetes deployment status email..."
 
-                def kubeOutput = sh(
-                    script: "kubectl get all -n app",
-                    returnStdout: true
-                ).trim()
+                def kubeOutput = ""
+
+                dir('K8S') {
+                        withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
+                            kubeOutput = sh(
+                                script: "kubectl get all -n app",
+                                returnStdout: true
+                            ).trim()
+                        }
+                }    
 
                 emailext (
                     to: 'info.ec2tech@gmail.com, akaspatranobis@gmail.com',
