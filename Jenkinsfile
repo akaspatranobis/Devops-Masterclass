@@ -148,17 +148,9 @@ pipeline{
     post {
         always {
  
-                emailext (
-                    to: 'akaspatranobis@gmail.com',
-                    subject: "Jenkins Build Result: ${currentBuild.currentResult}",
-                    body: """
-                    Jenkins Job: ${env.JOB_NAME}
-                    Build Number: ${env.BUILD_NUMBER}
-                    Status: ${currentBuild.currentResult}
-                    Build URL: ${env.BUILD_URL}
-                    """,
-                    mimeType: 'text/plain'
-                )
+            emailext body: '''$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
+
+Check console output at $BUILD_URL to view the results.''', recipientProviders: [buildUser()], subject: '${PROJECT_NAME} - Build # ${BUILD_NUMBER} - ${BUILD_STATUS}', to: 'akaspatranobis@gmail.com'
             
         }
     }
