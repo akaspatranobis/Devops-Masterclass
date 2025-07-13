@@ -148,8 +148,17 @@ pipeline{
     post {
         always {
  
-            emailext body: '''$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
-            Check console output at $BUILD_URL to view the results.''', recipientProviders: [buildUser()], subject: '${PROJECT_NAME} - Build # ${BUILD_NUMBER} - ${BUILD_STATUS}', to: 'akaspatranobis@gmail.com'
+            emailext (
+            to: 'akaspatranobis@gmail.com',
+            subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
+            body: """
+            Job: ${env.JOB_NAME}
+            Build: #${env.BUILD_NUMBER}
+            Status: ${currentBuild.currentResult}
+            Build URL: ${env.BUILD_URL}
+            """,
+            mimeType: 'text/plain'
+            )
             
         }
     }
