@@ -149,7 +149,7 @@ pipeline{
         always {
  
             emailext (
-            to: 'akaspatranobis@gmail.com',
+            to: 'info.ec2tech@gmail.com',
             subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
             body: """
             Job: ${env.JOB_NAME}
@@ -159,7 +159,7 @@ pipeline{
             """,
             mimeType: 'text/plain'
             )
-            
+
         }
     }
 
