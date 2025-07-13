@@ -149,8 +149,7 @@ pipeline{
         always {
  
             emailext body: '''$PROJECT_NAME - Build # $BUILD_NUMBER - $BUILD_STATUS:
-
-Check console output at $BUILD_URL to view the results.''', recipientProviders: [buildUser()], subject: '${PROJECT_NAME} - Build # ${BUILD_NUMBER} - ${BUILD_STATUS}', to: 'akaspatranobis@gmail.com'
+            Check console output at $BUILD_URL to view the results.''', recipientProviders: [buildUser()], subject: '${PROJECT_NAME} - Build # ${BUILD_NUMBER} - ${BUILD_STATUS}', to: 'akaspatranobis@gmail.com'
             
         }
     }
