@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: uiapp-deployment
-  namespace: app
 spec:
   replicas: 3  # Number of desired replicas
   selector:
@@ -20,7 +19,7 @@ spec:
     spec:
       containers:
       - name: uiapp
-        image: apatranobis59/uiapp:latest
+        image: apatranobis59/uiapp:__IMAGE_TAG__  # Jenkins will replace this
         resources:
           requests:
             memory: "350Mi"
@@ -29,4 +28,16 @@ spec:
             memory: "400Mi"
             cpu: "100m" 
         ports:
-        - containerPort: 3000  # Port your application listens on
+        - containerPort: 3000
+        livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 10
+            periodSeconds: 10
+        readinessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5

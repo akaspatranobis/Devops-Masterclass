@@ -6,6 +6,12 @@ pipeline{
     environment {
         SCANNER_HOME=tool 'sonar-scanner'
     }
+
+    parameters {
+        string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag to use')
+        choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Target deployment environment')
+    }
+
     stages {
         stage('clean workspace'){                 
             steps{
@@ -81,8 +87,8 @@ pipeline{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
                        sh "docker build -t uiapp ."
-                       sh "docker tag uiapp apatranobis59/uiapp:latest "
-                       sh "docker push apatranobis59/uiapp:latest"
+                       sh "docker tag uiapp apatranobis59/uiapp:${params.IMAGE_TAG}"
+                       sh "docker push apatranobis59/uiapp:${params.IMAGE_TAG}"
                     }
                 }
             }
@@ -91,7 +97,7 @@ pipeline{
             steps{
                 sh '''
                 mkdir -p trivy-reports
-                docker run --rm -v $(pwd):/project aquasec/trivy image apatranobis59/uiapp:latest \
+                docker run --rm -v $(pwd):/project aquasec/trivy image apatranobis59/uiapp:${params.IMAGE_TAG} \
                     --format template --template "@contrib/html.tpl" \
                     -o /project/trivy-reports/trivy-image.html
                 '''
@@ -111,30 +117,33 @@ pipeline{
                 script{
                     dir('K8S') {
                         withKubeConfig(caCertificate: '', clusterName: '', contextName: '', credentialsId: 'k8s', namespace: '', restrictKubeConfigAccess: false, serverUrl: '') {
-                                echo "🔧 Ensuring namespace 'app' exists..."
-                                sh 'kubectl get ns app || kubectl create ns app'
+                                echo "🔧 Ensuring namespace '${params.ENV}' exists..."
+                                sh "kubectl get ns ${params.ENV} || kubectl create ns ${params.ENV}"
+
+                                echo "Update the Image Built in the Deployment File"
+                                sh "sed -i 's/__IMAGE_TAG__/${params.IMAGE_TAG}/g' deployment.yml"
 
                                 echo "Applying Kubernetes Deployment..."
-                                sh 'kubectl apply -f deployment.yml'
+                                sh "kubectl apply -n ${params.ENV} -f deployment.yml"
 
                                 echo "Checking if service uiapp-service already exists..."
                                 def serviceExists = sh(
-                                    script: "kubectl get svc uiapp-service -n app > /dev/null 2>&1",
+                                    script: "kubectl get svc uiapp-service -n ${params.ENV} > /dev/null 2>&1",
                                     returnStatus: true
                                 ) == 0
 
                                 if (!serviceExists) {
                                     echo "✅ Service does not exist. Creating service from service.yml..."
-                                    sh 'kubectl apply -n app -f service.yml'
+                                    sh 'kubectl apply -n ${params.ENV} -f service.yml'
                                 } else {
                                     echo "⚠️ Service uiapp-service already exists. Skipping service apply."
                                 }
 
-                                echo "Waiting for pods to stabilize..."
-                                sh 'sleep 30'
+                                echo "⏳ Waiting for rollout to complete..."
+                                sh "kubectl rollout status deployment/uiapp-deployment -n ${params.ENV} --timeout=90s"
 
-                                echo "Getting deployed resources..."
-                                sh 'kubectl get all -n app'
+                                echo "🔗 Getting final resources..."
+                                sh "kubectl get all -n ${params.ENV}"
                                 
                         }
                     }
@@ -156,7 +165,7 @@ pipeline{
                  Build Number: ${env.BUILD_NUMBER}
                  Build URL: ${env.BUILD_URL}
                  """
-                 
+
         }
     }
 
