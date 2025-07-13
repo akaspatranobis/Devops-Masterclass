@@ -148,14 +148,17 @@ pipeline{
     post {
         always {
  
-            mail to: 'info.ec2tech@gmail.com',
-                 subject: "Jenkins Build Notification: ${currentBuild.fullDisplayName}",
-                 body: """\
-                 Build Status: ${currentBuild.currentResult}
-                 Project: ${env.JOB_NAME}
-                 Build Number: ${env.BUILD_NUMBER}
-                 Build URL: ${env.BUILD_URL}
-                 """
+            emailext (
+            to: 'info.ec2tech@gmail.com',
+            subject: "${env.JOB_NAME} - Build #${env.BUILD_NUMBER} - ${currentBuild.currentResult}",
+            body: """
+            Job: ${env.JOB_NAME}
+            Build: #${env.BUILD_NUMBER}
+            Status: ${currentBuild.currentResult}
+            Build URL: ${env.BUILD_URL}
+            """,
+            mimeType: 'text/plain'
+            )
 
         }
     }
