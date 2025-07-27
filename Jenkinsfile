@@ -134,7 +134,7 @@ pipeline{
 
                                 if (!serviceExists) {
                                     echo "✅ Service does not exist. Creating service from service.yml..."
-                                    sh 'kubectl apply -n ${params.ENV} -f service.yml'
+                                    sh "kubectl apply -n ${params.ENV} -f service.yml"
                                 } else {
                                     echo "⚠️ Service uiapp-service already exists. Skipping service apply."
                                 }
