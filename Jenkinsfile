@@ -9,7 +9,7 @@ pipeline{
 
     parameters {
         string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag to use')
-        choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], defaultValue: 'dev', description: 'Target deployment environment')
+        choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Target deployment environment')
     }
 
     stages {
