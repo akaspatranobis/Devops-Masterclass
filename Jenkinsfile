@@ -95,12 +95,12 @@ pipeline{
         }
         stage("Vulnerability SCAN"){
             steps{
-                sh '''
+                sh """
                 mkdir -p trivy-reports
                 docker run --rm -v $(pwd):/project aquasec/trivy image apatranobis59/uiapp:${params.IMAGE_TAG} \
                     --format template --template "@contrib/html.tpl" \
                     -o /project/trivy-reports/trivy-image.html
-                '''
+                """
                 publishHTML(target: [
                     reportName: 'Trivy Image Vulnerability Report',
                     reportDir: 'trivy-reports',
